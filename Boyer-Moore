@@ -1,0 +1,177 @@
+import java.util.ArrayList; 
+
+import java.util.HashMap; 
+
+import java.util.List; 
+
+import java.util.Scanner; 
+
+ 
+
+public class Main { 
+
+public static void main(String[] args) { 
+ 
+    Main main = new Main(); 
+ 
+    main.program_loop(); 
+ 
+} 
+
+public static final Scanner scanner = new Scanner(System.in); 
+ 
+public HashMap<Character, Integer> pre_proccess_bad_char(String pattern) { 
+ 
+    HashMap<Character, Integer> bad_char_table = new HashMap<>(); 
+ 
+    int pattern_len = pattern.length(); 
+ 
+    for (int i = 0; i < 256; i++) { 
+ 
+
+        bad_char_table.put((char) i, -1); 
+ 
+    } 
+ 
+    for (int i = 0; i < pattern_len; i++) { 
+ 
+
+        bad_char_table.put(pattern.charAt(i), i); 
+ 
+    } 
+ 
+    return bad_char_table; 
+ 
+} 
+ 
+public List<Integer> boyer_moore(String pattern, String text) { 
+ 
+    List<Integer> occurrences = new ArrayList<>(); 
+ 
+    int text_len = text.length(); 
+    int pattern_len = pattern.length(); 
+ 
+    if (pattern_len > text_len || pattern_len == 0) { return occurrences; } 
+
+// preprocessing function for Boyer Moore's bad character heuristic to search string for state name
+
+    HashMap<Character, Integer> bad_char_table = pre_proccess_bad_char(pattern); 
+ 
+    int shift = 0; 
+ 
+    while (shift <= (text_len - pattern_len)) { 
+ 
+        int i = pattern_len - 1; 
+ 
+        while (i >= 0 && pattern.charAt(i) == text.charAt(shift + i)) { 
+            i--; 
+ 
+        } 
+ 
+        if (i < 0) { 
+ 
+            occurrences.add(shift); 
+ 
+            shift += (shift + pattern_len < text_len) ? pattern_len - bad_char_table.get(text.charAt(shift + pattern_len)) : 1; 
+ 
+        } 
+ 
+        else { 
+ 
+            int bad_char_shift = i - bad_char_table.get(text.charAt(shift + i)); 
+ 
+            shift += Math.max(1, bad_char_shift); 
+ 
+        } 
+ 
+    } 
+ 
+    return occurrences; 
+ 
+} 
+ 
+public void search_for(String text) { 
+ 
+    List<Integer> occurrences; 
+ 
+    System.out.print("Type state name: "); 
+ 
+    if (scanner.hasNextLine()) { 
+ 
+        scanner.nextLine(); 
+ 
+    } 
+ 
+    String pattern = scanner.nextLine(); 
+ 
+    occurrences = boyer_moore(pattern, text); 
+ 
+    for (int i = 0; i < occurrences.size(); i++) { 
+ 
+        System.out.println("Occurrence found at index: " + occurrences.get(i)); 
+ 
+    } 
+ 
+} 
+ 
+
+// String of all state names to search from 
+
+ 
+public void program_loop() { 
+ 
+    String text = "Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada New Hampshire New Jersey New Mexico New York North Carolina North Dakota Ohio Oklahoma Oregon Pennsylvania Rhode Island South Carolina South Dakota Tennessee Texas Utah Vermont Virginia Washington West Virginia Wisconsin Wyoming"; 
+ 
+    int choice; 
+ 
+    while (true) { 
+ 
+
+// Menu for user input to display, search or end program 
+
+ 
+        System.out.print("--Boyer-Moore Algorithm on US States--\n1.) Display Text\n2.) Search\n3.) Exit Program\nChoice: "); 
+ 
+        while(!scanner.hasNextInt()) { 
+ 
+            System.out.print("Please enter 1, 2, or 3: "); 
+            scanner.next(); 
+ 
+        } 
+ 
+        choice = scanner.nextInt(); 
+ 
+        switch (choice) { 
+ 
+            case 1: 
+ 
+                System.out.println(text); 
+ 
+                break; 
+             
+            case 2: 
+ 
+                search_for(text); 
+ 
+                break; 
+ 
+            case 3: 
+ 
+                System.out.println("Exiting program..."); 
+ 
+                return; 
+ 
+            default: 
+ 
+                System.out.println("Invalid Option"); 
+ 
+        } 
+ 
+    } 
+ 
+} 
+  
+
+} 
+
+ 
